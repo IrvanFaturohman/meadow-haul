@@ -1,0 +1,33 @@
+{
+  "name": "meadow-haul",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Meadow Haul — a 3D web prototype about cutting, vacuuming, hauling and selling meadow bales.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "npm run build && gh-pages -d dist --nojekyll"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "gh-pages": "^6.3.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IrvanFaturohman/meadow-haul.git"
+  },
+  "homepage": "https://irvanfaturohman.github.io/meadow-haul/"
+}
