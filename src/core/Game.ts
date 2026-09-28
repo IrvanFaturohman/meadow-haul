@@ -17,7 +17,7 @@ import {
   XP,
   JUICE,
 } from '../config/balance';
-import { CAMERA, FIELD, HOSE_ANCHOR, PADS, PALLETS, TRUCK_LAYOUT, WORKSHOP } from '../config/worldLayout';
+import { CAMERA, DOCK, FIELD, HOSE_ANCHOR, PADS, PALLETS, TRUCK_LAYOUT, WORKSHOP } from '../config/worldLayout';
 import { createInitialState, type GameState, type SettingsState, type ToolId } from './GameState';
 import { Simulation, type SimMode } from './Simulation';
 import type { GameEvent } from './Events';
@@ -599,14 +599,16 @@ export class Game {
         break;
       case 'deliver': {
         a.play('drop', { volume: e.carrier === 'player' ? 1 : 0.55 });
-        if (s.truck.cargo.length % 3 === 0) a.play('truckLoad', { volume: 0.6 });
-        const tp = this.screenOf(s.truck.x + TRUCK_LAYOUT.bedOffsetX, 1.6, TRUCK_LAYOUT.z);
+        const tp = this.screenOf(DOCK.x, 1.4, DOCK.z);
         this.hud.floatText(`+${formatMoney(e.cents)}`, tp.x, tp.y, 'cash');
         this.requestSave(1);
         break;
       }
+      case 'truckLoad':
+        if (e.truckSlot % 3 === 0 && this.mode === 'FARM') a.play('truckLoad', { volume: 0.45 });
+        break;
       case 'truckState':
-        if (e.state === 'DEPARTING') this.hud.toast('Truck full — heading to market!', 'good', 'truck-go', 3);
+        if (e.state === 'DEPARTING' && s.truck.cargo.length >= TRUCK.capacity) this.hud.toast('Truck loaded — off to market!', 'good', 'truck-go', 6);
         break;
       case 'cashCollected': {
         const p = this.screenOf(PADS.cash.x, 0.6, PADS.cash.z);
@@ -904,23 +906,10 @@ export class Game {
     const pd = this.screenOf((PALLETS[0].x + PALLETS[1].x) / 2, n > 12 ? 2.2 : 1.7, PALLETS[0].z + 0.2);
     this.hud.label('depot', `${ICONS.bale}<span>${n} bale${n === 1 ? '' : 's'}</span>`, n > DEPOT_VISUAL_CAP ? 'cash' : '', pd.x, pd.y, inFarmish && !harvest && n > 0, true);
 
-    // Truck
+    // Truck: only shown while it loads from the dock (selling never waits for it).
     const tr = s.truck;
     const tp = this.screenOf(tr.x + TRUCK_LAYOUT.bedOffsetX, 2.2, TRUCK_LAYOUT.z);
-    let tText = '';
-    let tCls = '';
-    if (tr.state === 'LOADING') {
-      tText = `${ICONS.truck}<span>${tr.cargo.length}/${TRUCK.capacity}</span>`;
-      tCls = tr.cargo.length >= TRUCK.capacity ? 'cash' : '';
-    } else if (tr.state === 'ARRIVING') {
-      tText = `${ICONS.truck}<span>Truck arriving…</span>`;
-      tCls = 'muted';
-    } else {
-      tText = `${ICONS.truck}<span>Next truck soon</span>`;
-      tCls = 'muted';
-    }
-    const truckLblPos = tr.state === 'LOADING' || tr.state === 'ARRIVING' ? tp : this.screenOf(PADS.deliver.x, 1.2, PADS.deliver.z - 1.2);
-    this.hud.label('truck', tText, tCls, truckLblPos.x, truckLblPos.y, inFarmish && !harvest, true);
+    this.hud.label('truck', `${ICONS.truck}<span>${tr.cargo.length}/${TRUCK.capacity}</span>`, tr.cargo.length >= TRUCK.capacity ? 'cash' : '', tp.x, tp.y, inFarmish && !harvest && tr.state === 'LOADING' && tr.cargo.length > 0, true);
 
     // Pending cash
     const pc = this.screenOf(PADS.cash.x, 1.1, PADS.cash.z + 0.3);

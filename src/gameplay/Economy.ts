@@ -2,7 +2,6 @@
 
 import {
   HAULER,
-  TRUCK,
   UNITS_PER_BALE,
   XP,
   balePriceCents,
@@ -20,28 +19,23 @@ export function formatMoney(cents: number, forceDecimals = false): string {
   return (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function truckCanAccept(state: GameState): boolean {
-  return state.truck.state === 'LOADING' && state.truck.cargo.length < TRUCK.capacity;
-}
-
 /**
- * Moves one bale from a carrier onto the truck and books the sale:
- * carrier −1 → truck cargo +1 → pendingCash += price → sold stats/XP.
- * Returns the delivered bale, or null if nothing was transferred.
+ * Sells one bale from a carrier: carrier −1 → loading dock +1 (visual, already sold) →
+ * pendingCash += price → sold stats/XP. Never waits for a truck.
+ * Returns the delivered bale, or null if the carrier is empty.
  */
 export function deliverOne(state: GameState, carrier: Carrier, events?: EventQueue): Bale | null {
-  if (!truckCanAccept(state)) return null;
   const from = carrier === 'player' ? state.player.carry : state.hauler.carry;
   const bale = from.pop();
   if (!bale) return null;
-  state.truck.cargo.push(bale);
+  state.truck.dock.push(bale);
   const cents = balePriceCents(bale.tier, bale.qty);
   state.pendingCashCents += cents;
   state.stats.unitsSold += bale.qty;
   state.stats.balesSold += 1;
   state.stats.cashEarnedCents += cents;
   state.stats.firstSaleDone = true;
-  events?.push({ type: 'deliver', bale, carrier, cents, truckSlot: state.truck.cargo.length - 1 });
+  events?.push({ type: 'deliver', bale, carrier, cents, dockIndex: state.truck.dock.length - 1 });
   grantSaleXp(state, bale.qty, events);
   return bale;
 }

@@ -5,7 +5,7 @@ import { HAULER } from '../config/balance';
 import { HAULER_POINTS } from '../config/worldLayout';
 import type { GameState } from '../core/GameState';
 import type { EventQueue } from '../core/Events';
-import { deliverOne, haulerStats, truckCanAccept } from './Economy';
+import { deliverOne, haulerStats } from './Economy';
 import { takeTopBale } from './Inventory';
 import { walkToward } from './Player';
 
@@ -89,24 +89,16 @@ export function updateHauler(state: GameState, rt: HaulerRuntime, dt: number, ev
         h.state = 'RETURN';
         break;
       }
-      if (truckCanAccept(state)) {
-        if (moving(HAULER_POINTS.truck.x, HAULER_POINTS.truck.z)) {
-          h.state = 'UNLOAD';
-          rt.stepTimer = HAULER.unloadInterval * 0.5;
-        }
-      } else {
-        // Truck away or full: wait at the queue spot, clear of the player's route.
-        moving(HAULER_POINTS.queue.x, HAULER_POINTS.queue.z);
+      // Selling never waits for a truck: walk to the dock and unload.
+      if (moving(HAULER_POINTS.truck.x, HAULER_POINTS.truck.z)) {
+        h.state = 'UNLOAD';
+        rt.stepTimer = HAULER.unloadInterval * 0.5;
       }
       break;
     }
     case 'UNLOAD': {
       if (h.carry.length === 0) {
         h.state = 'RETURN';
-        break;
-      }
-      if (!truckCanAccept(state)) {
-        h.state = 'WALK_TO_TRUCK';
         break;
       }
       rt.stepTimer -= dt;

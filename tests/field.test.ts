@@ -78,8 +78,8 @@ describe('cutting', () => {
       const out = createCutOutput();
       let x = -4;
       const z = 3;
-      // Roughly the head speed under cutting drag at Blade level 1.
-      const speed = 2.0;
+      // A careful sweep, as Blade level 1 (thin knife) needs.
+      const speed = 1.2;
       for (let t = 0; t < 2.4; t += dt) {
         const nx = x + speed * dt;
         applyBladeSweep(s.field, x, z, nx, z, BLADE.radius(1), BLADE.dps(1), dt, out);

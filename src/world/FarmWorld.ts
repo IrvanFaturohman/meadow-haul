@@ -350,8 +350,14 @@ export class FarmWorld {
         const carrier = e.carrier === 'player' ? this.player : this.hauler;
         const from = this.bales.stackTop(carrier.view, carrier.view.bales.length, new THREE.Vector3());
         const target = new THREE.Vector3();
-        this.bales.launch(e.bale, from, () => this.bales.truckSlot(this.truck.bed, e.truckSlot, target), 0.24, 1.0, () => {
-          this.truckSquash.kick(-1.4);
+        this.bales.launch(e.bale, from, () => this.bales.dockSlot(e.dockIndex, target), 0.2, 0.8);
+        break;
+      }
+      case 'truckLoad': {
+        const from = this.bales.dockSlot(e.dockIndex, new THREE.Vector3());
+        const target = new THREE.Vector3();
+        this.bales.launch(e.bale, from, () => this.bales.truckSlot(this.truck.bed, e.truckSlot, target), 0.2, 0.9, () => {
+          this.truckSquash.kick(-1.2);
         });
         break;
       }
@@ -616,7 +622,7 @@ export class FarmWorld {
     this.hauler.view.bales = s.hauler.carry;
     const stacks: StackView[] = [this.player.view];
     if (s.hauler.level > 0) stacks.push(this.hauler.view);
-    this.bales.update(dt, s.depot.bales, stacks, this.truck.root.position.x > -30 ? this.truck.bed : null, tr.cargo);
+    this.bales.update(dt, s.depot.bales, stacks, this.truck.root.position.x > -30 ? this.truck.bed : null, tr.cargo, tr.dock);
 
     // Cash pile grows with pending cash
     const bills = Math.min(40, Math.ceil(s.pendingCashCents / 400));

@@ -64,8 +64,10 @@ export const BLADE = {
   maxLevel: 6,
   baseCost: 35,
   growth: 1.55,
-  dps: (level: number) => 4 * (1 + 0.3 * (level - 1)),
-  radius: (level: number) => 0.5 + 0.06 * (level - 1),
+  // Thin knife: modest at level 1, each Blade Power level is a clear step (sharper = more
+  // DPS, longer knife = wider cut). L1 → L6: 2.6 → 7.8 DPS, 0.42 → 0.87 radius.
+  dps: (level: number) => 2.6 * (1 + 0.4 * (level - 1)),
+  radius: (level: number) => 0.42 + 0.09 * (level - 1),
   /** Extra contact slack so clumps whose leaves touch the disc count as contact. */
   contactSlack: 0.08,
   /**
@@ -83,10 +85,10 @@ export const VACUUM = {
   maxLevel: 6,
   baseCost: 40,
   growth: 1.5,
-  // Tuned up from the brief's 16/s & 1.2 after playtest feedback: at 16/s a normal sweep
-  // left most cuttings behind, so the vacuum felt like it only nibbled a tiny area.
-  intake: (level: number) => 60 * (1 + 0.25 * (level - 1)),
-  radius: (level: number) => 1.5 + 0.15 * (level - 1),
+  // Base doubled from the brief (16/s felt like nibbling); each Vacuum Power level adds a
+  // clearly noticeable +40% intake and wider nozzle. L1 → L6: 32 → 96 units/s, 1.3 → 2.1 radius.
+  intake: (level: number) => 32 * (1 + 0.4 * (level - 1)),
+  radius: (level: number) => 1.3 + 0.16 * (level - 1),
   /** Cuttings this far out (× radius) visibly drift and swirl toward the nozzle. */
   attractScale: 1.8,
 };
@@ -131,18 +133,26 @@ export const PLAYER = {
   accelTau: 0.06,
   stopTau: 0.05,
   pickupDwell: 0.15,
-  pickupInterval: 0.17,
-  deliverInterval: 0.19,
+  pickupInterval: 0.12,
+  deliverInterval: 0.12,
   padDwell: 0.3,
   hirePadDwell: 0.7,
 };
 
+/**
+ * Selling never waits for a truck: DELIVER always accepts bales (paid at once to the cash
+ * pad) and stacks them on the loading dock; trucks just haul the dock away in the background.
+ */
 export const TRUCK = {
   capacity: 8,
-  arriveTime: 2.2,
-  departDelay: 0.45,
-  departTime: 1.9,
-  waitNext: 2.5,
+  arriveTime: 1.5,
+  /** Seconds per bale moved from the dock onto the truck bed (visual). */
+  loadInterval: 0.12,
+  departDelay: 0.3,
+  /** A part-loaded truck leaves after the dock has been empty this long. */
+  partialWait: 2.2,
+  departTime: 1.4,
+  waitNext: 1.0,
 };
 
 export const HAULER = {
@@ -152,8 +162,8 @@ export const HAULER = {
     { level: 2, cost: 180, carry: 6, speed: 3.2 },
     { level: 3, cost: 300, carry: 8, speed: 3.4 },
   ],
-  pickupInterval: 0.2,
-  unloadInterval: 0.22,
+  pickupInterval: 0.14,
+  unloadInterval: 0.14,
   /** How long the hauler lingers at the depot waiting for more stock before heading out with a partial load. */
   partialLoadWait: 1.6,
 };

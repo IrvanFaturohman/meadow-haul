@@ -23,7 +23,7 @@ import { moveHarvester, type MoveInput } from '../gameplay/Harvester';
 import { movePlayer } from '../gameplay/Player';
 import { updateTruck } from '../gameplay/Truck';
 import { createHaulerRuntime, updateHauler, type HaulerRuntime } from '../gameplay/Hauler';
-import { buyHauler, buyUpgrade, collectCash, deliverOne, truckCanAccept, type PurchaseResult } from '../gameplay/Economy';
+import { buyHauler, buyUpgrade, collectCash, deliverOne, type PurchaseResult } from '../gameplay/Economy';
 import { canPackLeftovers, packLeftovers, takeTopBale } from '../gameplay/Inventory';
 import { updateGoals } from '../gameplay/Goals';
 import { replantCells, replantEligible, CELL, cellCenterX, cellCenterZ, forEachCellInRadius } from '../world/FieldModel';
@@ -369,7 +369,7 @@ export class Simulation {
 
     // Deliver to truck
     z.deliver = inPad(p.x, p.z, PADS.deliver);
-    if (z.deliver && p.carry.length > 0 && truckCanAccept(s)) {
+    if (z.deliver && p.carry.length > 0) {
       rt.deliverTimer -= dt;
       if (rt.deliverTimer <= 0) {
         rt.deliverTimer = PLAYER.deliverInterval;

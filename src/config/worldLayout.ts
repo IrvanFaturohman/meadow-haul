@@ -75,6 +75,9 @@ export const TRUCK_LAYOUT = {
   bedOffsetX: -0.62,
 };
 
+/** Loading dock where sold bales wait for the truck (beside DELIVER, screen-right). */
+export const DOCK = { x: -5.0, z: -11.4 };
+
 export const PLAYER_START: Vec2 = { x: 1.0, z: -6.7 };
 export const PLAYER_RETURN_SPOT: Vec2 = { x: 1.1, z: -6.6 };
 
@@ -82,7 +85,7 @@ export const PLAYER_BOUNDS: Aabb = { minX: -5.45, maxX: 5.45, minZ: -11.75, maxZ
 
 export const HAULER_POINTS = {
   depot: { x: -4.75, z: -5.35 } as Vec2,
-  truck: { x: -4.75, z: -11.25 } as Vec2,
+  truck: { x: -4.45, z: -10.75 } as Vec2,
   queue: { x: -4.55, z: -8.3 } as Vec2,
   idle: { x: -4.6, z: -6.95 } as Vec2,
   spawn: { x: 2.2, z: -10.4 } as Vec2,

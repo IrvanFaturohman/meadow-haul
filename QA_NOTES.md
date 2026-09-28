@@ -136,6 +136,27 @@ Feedback: warna harus colorful seperti rekaman referensi. Warna disampling dari 
 - UI: aksen oranye/biru/hijau lebih cerah, latar desktop hijau cerah.
 - Model, UI, dan nama tetap orisinal; yang diikuti hanya arah warna.
 
+## Revisi setelah feedback (menunggu truk & progres reach)
+
+Feedback: area terjangkau cepat habis sehingga harus upgrade Length, tetapi uangnya lama terkumpul karena harus menunggu truk bolak-balik; setelah upgrade, mentok lagi dan menunggu lagi.
+
+Analisis: nilai tiap pita area baru (300–760 koin) jauh di atas harga upgrade reach berikutnya (50–408), jadi masalahnya waktu mati, bukan uang. Carry 8 = kapasitas truk 8, sehingga setiap pengantaran membuat truk penuh dan pemain menunggu ±7 s truk berikutnya; menjual satu pita butuh ±5 siklus seperti itu.
+
+- **Jual instan**: DELIVER selalu menerima bale; tiap bale langsung terjual dan dibayar ke pad uang. Bale terjual menumpuk di dermaga muat (pallet di samping DELIVER); truk mengangkutnya di latar belakang (0.12 s/bale ke bak, berangkat saat penuh atau 2.2 s setelah dermaga kosong). Hauler juga tidak lagi menunggu di antrean.
+- **Siklus truk lebih cepat**: datang 1.5 s, berangkat 1.4 s, truk berikutnya 1.0 s (visual saja).
+- **Angkut lebih cepat**: ambil & jual 0.12 s/bale (pemain), 0.14 s/bale (hauler).
+- Tes diperbarui: penjualan tanpa truk di dermaga tetap dibayar sekali; truk tidak pernah memuat > 8 dan tidak membayar ulang; seluruh dermaga terangkut.
+- Bot pacing: Reach Lv2 ≈32 s, Lv3 ≈71 s, Lv4 ≈122 s (sebelumnya ≈35/96/170 s), hauler ≈1.8–2.9 menit, Golden ≈7.5–8.7 menit.
+
+## Revisi setelah feedback (Blade/Vacuum Power terasa tidak berguna)
+
+Feedback: Blade Power dan Vacuum Power jadi tidak berguna; blade diminta seperti pisau tipis dan memotong tidak secepat ini.
+
+- **Visual blade**: sempat dicoba pisau tipis dua ujung, tetapi kurang terlihat di layar ponsel; atas permintaan pengguna dikembalikan ke cakram gerinda. Ukuran cakram tetap mengikuti radius potong, jadi upgrade Blade Power terlihat dari cakram yang membesar.
+- **Blade Power**: DPS `2.6 × (1 + 0.4 × (L − 1))` (2.6 → 7.8), radius `0.42 + 0.09 × (L − 1)` (0.42 → 0.87). Laju potong terbaik (sel/detik, simulasi): Meadow L1 9 · L2 24 · L3 35 · L6 67; Clover L1 5 · L2 13 · L3 23 · L6 55; Golden L1 ≈0 · L2 5 · L3 16 · L6 47.
+- **Vacuum Power**: intake `32 × (1 + 0.4 × (L − 1))` (32 → 96/s), radius `1.3 + 0.16 × (L − 1)` (1.3 → 2.1). Sapuan di atas karpet potongan: L1 32/s · L2 45 · L3 57 · L6 96.
+- Bot pacing: penjualan pertama ≈32 s, upgrade pertama ≈40 s, hauler ≈1.9–3.4 menit, Clover ≈2.6–4.9 menit, Golden ≈9 menit.
+
 ## Balance & keputusan (nilai final dan alasannya)
 
 - Angka ekonomi sama dengan brief **kecuali** (lihat bagian Revisi): intake/radius Vacuum dinaikkan, Storage dihapus, HP tanaman dinaikkan (1.15/2.1/3.1), hambatan potong ditambahkan, carry dasar 8. Harga tier 8/12/20, biaya & pengali upgrade Blade/Vacuum/Reach/Carry, hauler 220/180/300 (4/6/8 bale, 3.0/3.2/3.4 m/s), dan truk 8 bale tetap.

@@ -89,9 +89,9 @@ describe('depot and bales', () => {
 });
 
 describe('selling', () => {
-  it('pays per loaded bale exactly once, and cash collection cannot repeat', () => {
+  it('pays per sold bale exactly once, and cash collection cannot repeat', () => {
     const s = createInitialState();
-    loadingTruck(s);
+    s.truck.state = 'WAITING_NEXT'; // no truck at the dock: selling must not wait for one
     s.player.carry = [
       { id: 1, tier: 0, qty: 10 },
       { id: 2, tier: 1, qty: 10 },
@@ -101,7 +101,7 @@ describe('selling', () => {
     const ev = new EventQueue();
     while (deliverOne(s, 'player', ev));
     expect(s.player.carry.length).toBe(0);
-    expect(s.truck.cargo.length).toBe(3);
+    expect(s.truck.dock.length).toBe(3);
     expect(s.pendingCashCents).toBe(8_00 + 12_00 + 8_00);
     expect(collectCash(s, ev)).toBe(28_00);
     expect(collectCash(s, ev)).toBe(0);
@@ -109,19 +109,26 @@ describe('selling', () => {
     expect(s.stats.unitsSold).toBe(24);
   });
 
-  it('truck never exceeds capacity and departure does not pay again', () => {
+  it('selling never waits for the truck; trucks haul the dock away without paying again', () => {
     const s = createInitialState();
     loadingTruck(s);
     s.player.carry = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, tier: 0 as const, qty: 10 }));
     let delivered = 0;
     while (deliverOne(s, 'player')) delivered++;
-    expect(delivered).toBe(TRUCK.capacity);
-    expect(s.player.carry.length).toBe(4);
+    expect(delivered).toBe(12);
+    expect(s.player.carry.length).toBe(0);
+    expect(s.pendingCashCents).toBe(12 * 8_00);
     const pending = s.pendingCashCents;
-    for (let t = 0; t < 10; t += 1 / 60) updateTruck(s.truck, 1 / 60);
-    expect(s.truck.cargo.length).toBeLessThan(TRUCK.capacity);
+    let maxCargo = 0;
+    const ev = new EventQueue();
+    for (let t = 0; t < 20; t += 1 / 60) {
+      updateTruck(s.truck, 1 / 60, ev);
+      maxCargo = Math.max(maxCargo, s.truck.cargo.length);
+    }
+    expect(maxCargo).toBeLessThanOrEqual(TRUCK.capacity);
+    expect(s.truck.dock.length).toBe(0);
+    expect(ev.drain().filter((e) => e.type === 'truckLoad').length).toBe(12);
     expect(s.pendingCashCents).toBe(pending);
-    expect(s.truck.state === 'ARRIVING' || s.truck.state === 'LOADING' || s.truck.state === 'WAITING_NEXT').toBe(true);
   });
 
   it('player and hauler never own the same bale', () => {

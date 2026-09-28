@@ -1,5 +1,6 @@
-// Buyer truck: ARRIVING → LOADING → DEPARTING → WAITING_NEXT. Cargo on the truck is already
-// paid for (booked in the sold ledger), so clearing it on departure never touches money.
+// Buyer truck: ARRIVING → LOADING → DEPARTING → WAITING_NEXT. It hauls sold bales away from
+// the loading dock. Dock and cargo bales are already paid for (sold ledger), so moving or
+// clearing them never touches money — the player never has to wait for a truck to sell.
 
 import { TRUCK } from '../config/balance';
 import { TRUCK_LAYOUT } from '../config/worldLayout';
@@ -20,9 +21,23 @@ export function updateTruck(truck: TruckState, dt: number, events?: EventQueue):
     }
     case 'LOADING': {
       truck.x = TRUCK_LAYOUT.dockX;
-      if (truck.cargo.length >= TRUCK.capacity) {
+      if (truck.cargo.length < TRUCK.capacity && truck.dock.length > 0) {
+        truck.t = 0;
+        truck.loadT -= dt;
+        if (truck.loadT <= 0) {
+          truck.loadT = TRUCK.loadInterval;
+          const dockIndex = truck.dock.length - 1;
+          const bale = truck.dock.pop()!;
+          truck.cargo.push(bale);
+          events?.push({ type: 'truckLoad', bale, dockIndex, truckSlot: truck.cargo.length - 1 });
+        }
+      } else if (truck.cargo.length >= TRUCK.capacity) {
         truck.t += dt;
         if (truck.t >= TRUCK.departDelay) setState(truck, 'DEPARTING', events);
+      } else if (truck.cargo.length > 0) {
+        // Part-loaded and nothing left on the dock: head off after a short wait.
+        truck.t += dt;
+        if (truck.t >= TRUCK.partialWait) setState(truck, 'DEPARTING', events);
       } else {
         truck.t = 0;
       }
@@ -58,6 +73,7 @@ function setState(truck: TruckState, s: TruckState['state'], events?: EventQueue
 
 /** Normalizes a truck loaded from a save so no cargo is duplicated or sold twice. */
 export function normalizeTruck(truck: TruckState): void {
+  truck.loadT = 0;
   if (truck.state === 'LOADING' && truck.cargo.length < TRUCK.capacity) {
     truck.x = TRUCK_LAYOUT.dockX;
     truck.t = 0;

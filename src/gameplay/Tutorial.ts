@@ -100,7 +100,7 @@ export function updateTutorial(state: GameState, ctx: TutorialContext): Tutorial
     case S.DELIVER:
       if (ctx.mode === 'HARVEST') return { step: t.step, text: 'Back to farm', target: 'ui:back' };
       if (carrying === 0 && depotBales > 0) return { step: t.step, text: 'Pick up your harvest', target: 'pad:depot' };
-      return { step: t.step, text: 'Deliver bales to the truck', sub: 'Stand on DELIVER', target: 'pad:deliver' };
+      return { step: t.step, text: 'Sell your bales', sub: 'Stand on DELIVER', target: 'pad:deliver' };
     case S.CASH:
       if (ctx.mode === 'HARVEST') return { step: t.step, text: 'Back to farm', target: 'ui:back' };
       return { step: t.step, text: 'Collect your earnings', target: 'pad:cash' };

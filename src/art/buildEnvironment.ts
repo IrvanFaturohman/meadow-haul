@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { PALETTE } from '../config/palette';
 import {
   CONVEYOR,
+  DOCK,
   FIELD,
   PADS,
   PALLETS,
@@ -425,6 +426,15 @@ export function buildEnvironment(): EnvironmentRig {
   belt.position.set(cvX, 0.66, CONVEYOR.z);
   belt.receiveShadow = true;
   root.add(belt);
+
+  // Loading dock pallet beside DELIVER (sold bales wait here for the truck)
+  const dockPallet = mesh(merge([
+    ...[-0.5, 0, 0.5].map((dz) => box(1.55, 0.05, 0.3, PALETTE.wood, { y: 0.1, z: dz * 1.05 })),
+    ...[-0.5, 0, 0.5].map((dx) => box(0.16, 0.08, 1.4, PALETTE.woodDark, { x: dx * 1.4, y: 0.04 })),
+  ]));
+  dockPallet.position.set(DOCK.x, 0, DOCK.z);
+  dockPallet.receiveShadow = true;
+  root.add(dockPallet);
 
   // Depot pallets
   const palletGeo = merge([

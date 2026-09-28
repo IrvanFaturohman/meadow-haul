@@ -50,6 +50,9 @@ export interface TruckState {
   t: number;
   x: number;
   cargo: Bale[];
+  /** Sold bales waiting on the loading dock for the next truck (already paid; visual). */
+  dock: Bale[];
+  loadT: number;
 }
 
 export interface HaulerState {
@@ -155,7 +158,7 @@ export function createInitialState(seed = 1337, settings?: SettingsState): GameS
     depot: { raw: [0, 0, 0], bales: [] },
     player: { x: PLAYER_START.x, z: PLAYER_START.z, vx: 0, vz: 0, facing: Math.PI, carry: [] },
     harvester: { x: TOOL_START.x, z: TOOL_START.z, vx: 0, vz: 0, tool: 'BLADE', switchT: 0, vacuumAcc: 0 },
-    truck: { state: 'ARRIVING', t: 0, x: TRUCK_LAYOUT.enterX, cargo: [] },
+    truck: { state: 'ARRIVING', t: 0, x: TRUCK_LAYOUT.enterX, cargo: [], dock: [], loadT: 0 },
     hauler: {
       level: 0,
       state: 'WAIT_FOR_STOCK',

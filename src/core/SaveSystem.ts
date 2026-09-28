@@ -192,6 +192,7 @@ export function deserialize(json: string): GameState {
   const ts = tr.state;
   s.truck.state = ts === 'ARRIVING' || ts === 'LOADING' || ts === 'DEPARTING' || ts === 'WAITING_NEXT' ? ts : 'ARRIVING';
   s.truck.cargo = readBales(tr.cargo ?? [], TRUCK.capacity);
+  s.truck.dock = readBales(tr.dock ?? [], 5000);
   s.truck.t = 0;
   normalizeTruck(s.truck);
 
@@ -237,7 +238,7 @@ export function deserialize(json: string): GameState {
 
   // Bale ids must stay unique after load.
   let maxId = clampInt(o.nextBaleId, 1, Number.MAX_SAFE_INTEGER, 1);
-  for (const list of [s.depot.bales, s.player.carry, s.hauler.carry, s.truck.cargo]) for (const b of list) maxId = Math.max(maxId, b.id + 1);
+  for (const list of [s.depot.bales, s.player.carry, s.hauler.carry, s.truck.cargo, s.truck.dock]) for (const b of list) maxId = Math.max(maxId, b.id + 1);
   s.nextBaleId = maxId;
   return s;
 }

@@ -53,7 +53,7 @@ Petunjuk keyboard hanya tampil setelah input desktop (keyboard/mouse) terdeteksi
 ## Ringkasan loop
 
 1. **Harvest mode** — traktor diam di pangkal ladang; kepala alat bergerak di bidang XZ dengan jangkauan maksimum (upgrade *Hose Length*). Batasnya berbentuk lebar (baris dekat terjangkau selebar ladang) dan elastis: bisa ditarik sedikit lalu memantul balik, dengan selang yang menegang lurus. **Blade** memotong tanaman (damage berbasis waktu, swept), meninggalkan tanah + stubble + potongan lepas; menembus tanaman berdiri terasa berat (alat melambat), makin ringan dengan Blade Power. **Vacuum** menyedot potongan lepas (potongan di sekitar nozzle ikut tertarik dan berputar masuk) → depot; tiap 10 unit tier yang sama menjadi 1 bale. Depot tidak punya batas kapasitas.
-2. **Farm mode** — karakter mengambil bale dari tumpukan **BALES** (tumpukan di punggung), mengantar ke truk di **DELIVER** (dibayar per bale ke pad uang), lalu mengambil uang di **COLLECT CASH**.
+2. **Farm mode** — karakter mengambil bale dari tumpukan **BALES** (tumpukan di punggung), menjualnya di **DELIVER** (langsung terjual per bale, tanpa menunggu truk; truk mengangkut tumpukan dermaga di latar belakang), lalu mengambil uang di **COLLECT CASH**.
 3. **Upgrade** di pad **UPGRADE** (workshop): Blade Power, Vacuum Power, Hose Length (reach), Carry Capacity, serta Hauler.
 4. **Hauler** (setelah penjualan pertama, pad **HIRE**, 220) mengangkut bale depot → truk secara otomatis; hasil penjualannya masuk ke pad uang yang sama.
 5. **REPLANT** (gratis) menumbuhkan ulang sel yang potongannya sudah terkumpul semua. Sel dengan potongan yang belum disedot dan tanaman hidup tidak berubah.

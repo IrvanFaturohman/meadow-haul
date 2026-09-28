@@ -16,7 +16,8 @@ export type GameEvent =
   | { type: 'reachHint' }
   | { type: 'pickup'; bale: Bale; carrier: Carrier; depotIndex: number }
   | { type: 'carryFull'; carrier: Carrier }
-  | { type: 'deliver'; bale: Bale; carrier: Carrier; cents: number; truckSlot: number }
+  | { type: 'deliver'; bale: Bale; carrier: Carrier; cents: number; dockIndex: number }
+  | { type: 'truckLoad'; bale: Bale; dockIndex: number; truckSlot: number }
   | { type: 'truckState'; state: TruckStateName }
   | { type: 'cashCollected'; cents: number }
   | { type: 'upgradeBought'; id: UpgradeId; level: number; cost: number }

@@ -4,7 +4,7 @@
 
 import * as THREE from 'three';
 import type { TierId } from '../config/balance';
-import { PALLETS } from '../config/worldLayout';
+import { DOCK, PALLETS } from '../config/worldLayout';
 import type { Bale } from '../core/GameState';
 import { BALE_SIZE, baleGeometries, baleScale } from '../art/buildBale';
 import { TRUCK_SLOTS } from '../art/buildTruck';
@@ -15,6 +15,7 @@ const CAP_PER_TIER = 220;
 /** Visual cap only (4 pallets × 6 × 2 layers); the depot itself is unlimited. */
 export const DEPOT_VISUAL_CAP = 48;
 export const STACK_VISUAL_CAP = 10;
+export const DOCK_VISUAL_CAP = 18;
 
 interface Flight {
   bale: Bale;
@@ -90,6 +91,14 @@ export class BaleRenderer {
     return out.set(p.x + lx, 0.2 + BALE_SIZE.y / 2 + layer * BALE_SIZE.y, p.z + lz);
   }
 
+  /** Loading-dock slot i: 3 × 2 per layer, 3 layers (18 visible); more are counted by label. */
+  dockSlot(i: number, out: THREE.Vector3): THREE.Vector3 {
+    const k = Math.min(i, DOCK_VISUAL_CAP - 1);
+    const layer = Math.floor(k / 6);
+    const j = k % 6;
+    return out.set(DOCK.x + ((j % 3) - 1) * 0.45, BALE_SIZE.y / 2 + layer * BALE_SIZE.y + 0.02, DOCK.z + (Math.floor(j / 3) - 0.5) * 0.64);
+  }
+
   depotSlotRotated(i: number): boolean {
     return Math.floor(i / (PALLETS.length * 6)) % 2 === 1;
   }
@@ -130,9 +139,17 @@ export class BaleRenderer {
     this.counts[tier] = n + 1;
   }
 
-  update(dt: number, depot: readonly Bale[], stacks: StackView[], truckBed: THREE.Object3D | null, truckCargo: readonly Bale[]): void {
+  update(dt: number, depot: readonly Bale[], stacks: StackView[], truckBed: THREE.Object3D | null, truckCargo: readonly Bale[], dock: readonly Bale[]): void {
     this.time += dt;
     this.counts[0] = this.counts[1] = this.counts[2] = 0;
+
+    // Loading dock (sold, waiting for the truck)
+    for (let i = 0; i < Math.min(dock.length, DOCK_VISUAL_CAP); i++) {
+      const b = dock[i];
+      if (this.inFlight.has(b.id)) continue;
+      this.dockSlot(i, _p);
+      this.write(b.tier, _p, Math.PI / 2 + (hash01(b.id) - 0.5) * 0.12, 0, 0, baleScale(b.qty), b.id);
+    }
 
     // Depot
     const nDepot = Math.min(depot.length, DEPOT_VISUAL_CAP);
