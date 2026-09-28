@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+*.log
+# Local design brief (kept out of the public repo)
+Claude_Code_Prompt_Meadow_Haul_Web_3D.md
+references/*
