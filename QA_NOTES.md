@@ -126,6 +126,16 @@ Feedback: memotong terlalu ringan sehingga Blade Power terasa tidak berguna, has
 
 - Bot pacing setelah revisi: penjualan pertama ≈24 s, upgrade pertama ≈35 s, hauler ≈2.4–4.1 menit, Clover ≈3–6 menit, Golden ≈10–11 menit.
 
+## Revisi setelah feedback (warna lebih colorful)
+
+Feedback: warna harus colorful seperti rekaman referensi. Warna disampling dari frame rekaman (PIL, rata-rata area): pasir `#FCD289`, lawn `#A2EF6F`, tanah ladang `#D8754B`, tanaman `#1BB945` dengan pangkal kuning `#E1CB5E`, bulir `#D8AF0B`, jalan `#B28BB4`, tiang pagar `#CD785F`. Sebelumnya game merender lawn ≈`#73AB40` dan tanaman ≈`#7DAC44` (kusam).
+
+- Palet baru di `src/config/palette.ts` (menggantikan palet awal brief): lawn limau, jalan & area kerja pasir, jalan raya ungu muda dengan garis putih, tanah ladang terakota bergaris, tanaman hijau jenuh dengan pangkal kuning, Clover hijau terang dengan bunga merah muda, Golden kuning cerah, traktor oranye terang, truk biru, selang biru terang dengan sambungan putih.
+- Pencahayaan: hemisphere putih + pantulan pasir hangat (sisi objek tidak lagi gelap), matahari sedikit diturunkan, intensitas bayangan 0.45 (bayangan tipis seperti referensi).
+- Pad interaksi bergaya referensi: isi hijau, garis putus-putus putih, ikon & teks putih bergaris luar.
+- UI: aksen oranye/biru/hijau lebih cerah, latar desktop hijau cerah.
+- Model, UI, dan nama tetap orisinal; yang diikuti hanya arah warna.
+
 ## Balance & keputusan (nilai final dan alasannya)
 
 - Angka ekonomi sama dengan brief **kecuali** (lihat bagian Revisi): intake/radius Vacuum dinaikkan, Storage dihapus, HP tanaman dinaikkan (1.15/2.1/3.1), hambatan potong ditambahkan, carry dasar 8. Harga tier 8/12/20, biaya & pengali upgrade Blade/Vacuum/Reach/Carry, hauler 220/180/300 (4/6/8 bale, 3.0/3.2/3.4 m/s), dan truk 8 bale tetap.

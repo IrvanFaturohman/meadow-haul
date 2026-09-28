@@ -159,7 +159,7 @@ export function buildClumpGeometry(tier: 0 | 1 | 2, detail: GrassDetail): THREE.
     const leafC = new THREE.Color(PALETTE.clover);
     const leafTip = new THREE.Color(PALETTE.cloverTip);
     const flower = new THREE.Color(PALETTE.cloverFlower);
-    const flowerTop = new THREE.Color('#FFFBEF');
+    const flowerTop = new THREE.Color('#FFF0F6');
     const stems = detail === 'low' ? 3 : 4;
     for (let i = 0; i < stems; i++) {
       const yaw = (i / stems) * Math.PI * 2 + r() * 0.7;

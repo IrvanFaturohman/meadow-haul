@@ -3,14 +3,14 @@
   --cream-2: #fbe6bd;
   --ink: #263c33;
   --ink-soft: #4d6358;
-  --warm: #df7654;
-  --warm-dark: #b95a3d;
-  --cool: #4a9692;
-  --cool-dark: #357370;
-  --green: #69aa43;
-  --green-dark: #4e8a33;
+  --warm: #ff7a45;
+  --warm-dark: #d65a2c;
+  --cool: #2e9be6;
+  --cool-dark: #1d6fbf;
+  --green: #3cc85a;
+  --green-dark: #2e9e45;
   --cash: #5fae5c;
-  --gold: #ddb64e;
+  --gold: #f2c230;
   --disabled: #c9bda2;
   --shadow: rgba(38, 60, 51, 0.28);
   --font: ui-rounded, 'SF Pro Rounded', 'Nunito', 'Varela Round', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -29,7 +29,7 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #37583f;
+  background: #4bb04c;
   font-family: var(--font);
   color: var(--ink);
   -webkit-user-select: none;
@@ -40,9 +40,9 @@ body {
 
 body {
   background:
-    radial-gradient(circle at 20% 10%, rgba(255, 241, 210, 0.12), transparent 40%),
-    radial-gradient(circle at 80% 90%, rgba(221, 182, 78, 0.12), transparent 45%),
-    linear-gradient(160deg, #3f6a45, #2c4a36);
+    radial-gradient(circle at 20% 10%, rgba(255, 241, 210, 0.2), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(252, 210, 137, 0.25), transparent 45%),
+    linear-gradient(160deg, #5cc24e, #2f9a58);
 }
 
 #app {
@@ -59,7 +59,7 @@ body {
   height: 100dvh;
   width: 100%;
   overflow: hidden;
-  background: #5e9a3f;
+  background: #a2ef6f;
   contain: layout paint;
 }
 

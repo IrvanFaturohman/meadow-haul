@@ -99,48 +99,57 @@ const ICONS: Record<string, (ctx: CanvasRenderingContext2D, s: number) => void> 
   },
 };
 
-function padTexture(label: string, sub: string, accent: string, icon: keyof typeof ICONS): THREE.CanvasTexture {
+function padTexture(label: string, sub: string, _accent: string, icon: keyof typeof ICONS): THREE.CanvasTexture {
+  // Reference-style pad: soft green fill, white dashed outline, white outlined lettering.
   const S = 256;
   const c = document.createElement('canvas');
   c.width = S;
   c.height = S;
   const ctx = c.getContext('2d')!;
-  const r = 44;
-  const m = 10;
-  ctx.fillStyle = 'rgba(255,241,210,0.92)';
-  ctx.strokeStyle = accent;
-  ctx.lineWidth = 12;
+  const r = 46;
+  const m = 12;
+  ctx.globalAlpha = 0.9;
+  ctx.fillStyle = PALETTE.padFill;
   ctx.beginPath();
   ctx.roundRect(m, m, S - m * 2, S - m * 2, r);
   ctx.fill();
-  ctx.stroke();
-  ctx.setLineDash([14, 12]);
-  ctx.lineWidth = 4;
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = PALETTE.padLine;
+  ctx.lineWidth = 11;
+  ctx.setLineDash([24, 15]);
+  ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.roundRect(m + 16, m + 16, S - (m + 16) * 2, S - (m + 16) * 2, r - 12);
+  ctx.roundRect(m + 8, m + 8, S - (m + 8) * 2, S - (m + 8) * 2, r - 6);
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.globalAlpha = 1;
   ctx.save();
-  ctx.translate(S / 2, S * 0.4);
-  ctx.strokeStyle = accent;
-  ctx.fillStyle = accent;
-  ctx.lineWidth = 9;
+  ctx.translate(S / 2, S * 0.38);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ICONS[icon](ctx, 96);
+  // Dark outline pass, then white icon on top.
+  ctx.strokeStyle = PALETTE.padStroke;
+  ctx.fillStyle = PALETTE.padStroke;
+  ctx.lineWidth = 17;
+  ICONS[icon](ctx, 92);
+  ctx.strokeStyle = PALETTE.padText;
+  ctx.fillStyle = PALETTE.padText;
+  ctx.lineWidth = 9;
+  ICONS[icon](ctx, 92);
   ctx.restore();
-  ctx.fillStyle = PALETTE.textDark;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const size = label.length > 9 ? 30 : 38;
+  const size = label.length > 9 ? 32 : 40;
   ctx.font = `900 ${size}px ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif`;
-  ctx.fillText(label, S / 2, S * 0.76);
+  ctx.lineWidth = 9;
+  ctx.strokeStyle = PALETTE.padStroke;
+  ctx.strokeText(label, S / 2, S * 0.74);
+  ctx.fillStyle = PALETTE.padText;
+  ctx.fillText(label, S / 2, S * 0.74);
   if (sub) {
-    ctx.font = `800 22px ui-rounded, system-ui, sans-serif`;
-    ctx.globalAlpha = 0.7;
-    ctx.fillText(sub, S / 2, S * 0.88);
+    ctx.font = `800 23px ui-rounded, system-ui, sans-serif`;
+    ctx.lineWidth = 6;
+    ctx.strokeText(sub, S / 2, S * 0.87);
+    ctx.fillText(sub, S / 2, S * 0.87);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -158,7 +167,7 @@ function buildPad(pad: Pad, label: string, sub: string, accent: string, icon: ke
   const m = new THREE.Mesh(geo, mat);
   m.position.set(pad.x, 0.02, pad.z);
   m.renderOrder = 1;
-  const ringMat = new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0, depthWrite: false });
+  const ringMat = new THREE.MeshBasicMaterial({ color: accent === PALETTE.cashDark ? '#FFF6A8' : '#FFFFFF', transparent: true, opacity: 0, depthWrite: false });
   const ring = new THREE.Mesh(new THREE.RingGeometry(pad.r * 1.08, pad.r * 1.2, 40), ringMat);
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(pad.x, 0.025, pad.z);
@@ -227,7 +236,7 @@ export function buildEnvironment(): EnvironmentRig {
     const x = gGeo.attributes.position.getX(i);
     const z = gGeo.attributes.position.getZ(i);
     const n = valueNoise(x * 0.18, z * 0.18, 5) * 0.7 + valueNoise(x * 0.6, z * 0.6, 8) * 0.3;
-    cT.copy(cA).lerp(cB, n * 0.8);
+    cT.copy(cA).lerp(cB, n * 0.6);
     gCol[i * 3] = cT.r;
     gCol[i * 3 + 1] = cT.g;
     gCol[i * 3 + 2] = cT.b;
@@ -240,7 +249,7 @@ export function buildEnvironment(): EnvironmentRig {
 
   // ---- Flat decals: paths, road, pad bases ----------------------------------------
   const decals: THREE.BufferGeometry[] = [];
-  const path = (a: Vec2, b: Vec2, w = 1.25) => {
+  const path = (a: Vec2, b: Vec2, w = 1.6) => {
     const len = Math.hypot(b.x - a.x, b.z - a.z);
     const ang = Math.atan2(b.x - a.x, b.z - a.z);
     decals.push(paint(place(new THREE.PlaneGeometry(w + 0.18, len), { rx: -Math.PI / 2, ry: ang, x: (a.x + b.x) / 2, y: 0.006, z: (a.z + b.z) / 2 }), PALETTE.pathEdge));
@@ -276,7 +285,7 @@ export function buildEnvironment(): EnvironmentRig {
   // Depot slab
   const pcx = (PALLETS[0].x + PALLETS[1].x) / 2;
   const pcz = (PALLETS[0].z + PALLETS[2].z) / 2;
-  decals.push(paint(place(new THREE.PlaneGeometry(3.3, 3.3), { rx: -Math.PI / 2, x: pcx, y: 0.007, z: pcz }), '#C7B08A'));
+  decals.push(paint(place(new THREE.PlaneGeometry(3.3, 3.3), { rx: -Math.PI / 2, x: pcx, y: 0.007, z: pcz }), '#F6CE8C'));
   const decalMesh = new THREE.Mesh(merge(decals), new THREE.MeshLambertMaterial({ vertexColors: true }));
   decalMesh.receiveShadow = true;
   root.add(decalMesh);
@@ -331,7 +340,7 @@ export function buildEnvironment(): EnvironmentRig {
   props.push(box(W.w + 0.5, 0.14, roofW * 1.08, PALETTE.roof, { x: W.x, y: 1.95, z: W.z - roofW * 0.48, rx: -0.55 }));
   props.push(box(W.w + 0.5, 0.14, roofW * 1.08, PALETTE.roof, { x: W.x, y: 1.95, z: W.z + roofW * 0.48, rx: 0.55 }));
   props.push(box(W.w + 0.02, 0.62, 0.06, PALETTE.wall, { x: W.x, y: 1.75, z: front + 0.18, sx: 0.98 }));
-  props.push(box(0.2, 0.2, W.d * 1.1, '#A4432F', { x: W.x, y: 2.42, z: W.z, rx: Math.PI / 4 }));
+  props.push(box(0.2, 0.2, W.d * 1.1, '#C9442F', { x: W.x, y: 2.42, z: W.z, rx: Math.PI / 4 }));
   // Door + frame
   props.push(box(0.9, 1.15, 0.06, PALETTE.woodDark, { x: W.x - 0.45, y: 0.6, z: front - 0.02 }));
   props.push(box(0.8, 1.05, 0.05, PALETTE.wood, { x: W.x - 0.45, y: 0.56, z: front - 0.05 }));
@@ -339,7 +348,7 @@ export function buildEnvironment(): EnvironmentRig {
   // Window frame
   props.push(box(0.7, 0.55, 0.06, PALETTE.woodDark, { x: W.x + 0.75, y: 0.95, z: front - 0.02 }));
   // Chimney
-  props.push(box(0.3, 0.7, 0.3, '#B55A45', { x: W.x + 0.9, y: 2.3, z: W.z + 0.4 }));
+  props.push(box(0.3, 0.7, 0.3, '#DE6A4E', { x: W.x + 0.9, y: 2.3, z: W.z + 0.4 }));
   // Workbench + barrel outside
   props.push(box(0.9, 0.08, 0.45, PALETTE.wood, { x: W.x + 1.95, y: 0.6, z: W.z - 0.2 }));
   for (const dx of [-0.38, 0.38]) props.push(box(0.07, 0.58, 0.4, PALETTE.woodDark, { x: W.x + 1.95 + dx, y: 0.3, z: W.z - 0.2 }));
@@ -363,7 +372,7 @@ export function buildEnvironment(): EnvironmentRig {
 
   // Water trough by the fence (decor, outside walking routes)
   props.push(rbox(1.0, 0.36, 0.45, 0.05, PALETTE.woodDark, { x: 5.9, y: 0.18, z: -8.4, ry: Math.PI / 2 }));
-  props.push(box(0.34, 0.02, 0.88, '#7FB7C8', { x: 5.9, y: 0.33, z: -8.4 }));
+  props.push(box(0.34, 0.02, 0.88, '#6CC8F0', { x: 5.9, y: 0.33, z: -8.4 }));
 
   const propMesh = mesh(merge(props));
   propMesh.receiveShadow = true;
@@ -403,9 +412,9 @@ export function buildEnvironment(): EnvironmentRig {
   bc.width = 64;
   bc.height = 16;
   const bctx = bc.getContext('2d')!;
-  bctx.fillStyle = '#3B4E4A';
+  bctx.fillStyle = '#4A5A6E';
   bctx.fillRect(0, 0, 64, 16);
-  bctx.fillStyle = '#56706A';
+  bctx.fillStyle = '#6E8199';
   for (let k = 0; k < 4; k++) bctx.fillRect(k * 16, 0, 6, 16);
   const conveyorTex = new THREE.CanvasTexture(bc);
   conveyorTex.wrapS = THREE.RepeatWrapping;

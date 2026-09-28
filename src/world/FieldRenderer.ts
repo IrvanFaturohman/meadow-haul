@@ -86,10 +86,10 @@ export class FieldRenderer {
     const uniforms = {
       uMask: { value: this.maskTex },
       uGrassA: { value: new THREE.Color(PALETTE.grassShadow) },
-      uGrassB: { value: new THREE.Color('#2F5F36') },
+      uGrassB: { value: new THREE.Color('#149E3B') },
       uSoil: { value: new THREE.Color(PALETTE.soil) },
       uSoilDark: { value: new THREE.Color(PALETTE.soilDark) },
-      uGoldGround: { value: new THREE.Color('#8C7A3A') },
+      uGoldGround: { value: new THREE.Color('#D9A52E') },
       uOrigin: { value: new THREE.Vector2(FIELD.x0, FIELD.z0) },
       uSize: { value: new THREE.Vector2(FIELD.width, FIELD.length) },
     };
@@ -124,7 +124,7 @@ export class FieldRenderer {
           grass = mix(grass, uGoldGround, smoothstep(0.66, 0.70, vFieldUv.y) * 0.45);
           vec3 soil = mix(uSoilDark, uSoil, 0.45 + n1 * 0.35 + n2 * 0.25);
           // Furrow stripes along the field make harvested ground read as tilled soil.
-          soil *= 0.93 + 0.07 * sin(vWorldXZ.x * 10.5 + n1 * 2.0);
+          soil *= 0.94 + 0.06 * sin(vWorldXZ.x * 7.0 + sin(vWorldXZ.y * 0.9) * 1.6 + n1 * 2.0);
           soil = mix(soil, soil * vec3(0.92, 0.95, 0.8), m.g * 0.6);
           diffuseColor.rgb = mix(grass, soil, soilT);`,
         );

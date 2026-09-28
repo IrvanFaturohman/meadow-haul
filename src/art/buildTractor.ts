@@ -94,8 +94,8 @@ export function buildTractor(): TractorRig {
   const reel = new THREE.Group();
   reel.position.set(0, 0.74, 1.36);
   const reelParts: THREE.BufferGeometry[] = [];
-  reelParts.push(cyl(0.3, 0.3, 0.9, PALETTE.cool, { rz: Math.PI / 2 }, 16));
-  for (let k = 0; k < 6; k++) reelParts.push(torus(0.3, 0.035, '#3B7E7A', { x: -0.38 + k * 0.152, ry: Math.PI / 2 }, 6, 16));
+  reelParts.push(cyl(0.3, 0.3, 0.9, PALETTE.hose, { rz: Math.PI / 2 }, 16));
+  for (let k = 0; k < 6; k++) reelParts.push(torus(0.3, 0.035, PALETTE.hoseDark, { x: -0.38 + k * 0.152, ry: Math.PI / 2 }, 6, 16));
   reelParts.push(box(0.92, 0.05, 0.05, M, { y: 0.3 }));
   reel.add(mesh(merge(reelParts)));
   body.add(reel);

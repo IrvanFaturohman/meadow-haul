@@ -31,9 +31,10 @@ export class Hose {
   private samples: THREE.Vector3[] = [];
   private pulses: Pulse[] = [];
   private pulsePool: Pulse[] = [];
-  private base = new THREE.Color(PALETTE.cool);
-  private dark = new THREE.Color('#3A7C78');
-  private tautColor = new THREE.Color('#7CC3BD');
+  private base = new THREE.Color(PALETTE.hose);
+  private dark = new THREE.Color(PALETTE.hoseDark);
+  private tautColor = new THREE.Color(PALETTE.hoseTaut);
+  private nodeColor = new THREE.Color('#F4F8FF');
   private tmp = new THREE.Vector3();
   private tmpN = new THREE.Vector3();
   private tmpB = new THREE.Vector3();
@@ -292,9 +293,10 @@ export class Hose {
           pulseCol.lerp(p.color, w * 0.7);
         }
       }
-      // Subtle rib shading along the hose
-      const rib = s % 4 === 0 ? 0.88 : 1;
-      const r = rad * (1 + bulge);
+      // White joint bands every few samples (like segmented garden hose couplings).
+      const node = s > 0 && s < SAMPLES && s % 6 === 0;
+      const rib = node ? 1 : s % 3 === 0 ? 0.92 : 1;
+      const r = rad * (1 + bulge) * (node ? 1.35 : 1);
       const c = this.samples[s];
       for (let k = 0; k <= RADIAL; k++) {
         const ang = (k / RADIAL) * Math.PI * 2;
@@ -311,9 +313,11 @@ export class Hose {
         nor[o + 1] = ny;
         nor[o + 2] = nz;
         const shade = rib;
-        col[o] = (bulge > 0.02 ? pulseCol.r : k % 2 ? baseCol.r : this.dark.r * 0.3 + baseCol.r * 0.7) * shade;
-        col[o + 1] = (bulge > 0.02 ? pulseCol.g : k % 2 ? baseCol.g : this.dark.g * 0.3 + baseCol.g * 0.7) * shade;
-        col[o + 2] = (bulge > 0.02 ? pulseCol.b : k % 2 ? baseCol.b : this.dark.b * 0.3 + baseCol.b * 0.7) * shade;
+        const src = bulge > 0.02 ? pulseCol : node ? this.nodeColor : baseCol;
+        const mixDark = bulge > 0.02 || node || k % 2 ? 0 : 0.25;
+        col[o] = (src.r * (1 - mixDark) + this.dark.r * mixDark) * shade;
+        col[o + 1] = (src.g * (1 - mixDark) + this.dark.g * mixDark) * shade;
+        col[o + 2] = (src.b * (1 - mixDark) + this.dark.b * mixDark) * shade;
       }
     }
     this.posAttr.needsUpdate = true;

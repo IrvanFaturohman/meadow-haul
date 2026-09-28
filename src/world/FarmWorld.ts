@@ -124,12 +124,13 @@ export class FarmWorld {
 
   constructor(state: GameState, quality: QualityProfile) {
     this.state = state;
-    this.scene.background = new THREE.Color(PALETTE.farmGrassDark);
+    this.scene.background = new THREE.Color(PALETTE.farmGrass);
 
-    // Lighting tuned so lit surfaces land close to the palette (no tone mapping).
-    this.hemi = new THREE.HemisphereLight('#FFF6E4', '#6E8F5A', 2.0);
+    // Bright, soft "toy" lighting: up-facing surfaces land on the palette (no tone mapping),
+    // a warm sand-coloured bounce keeps sides from going muddy, and shadows stay light.
+    this.hemi = new THREE.HemisphereLight('#FFFFFF', '#F4DEB0', 1.95);
     this.scene.add(this.hemi);
-    this.sun = new THREE.DirectionalLight('#FFF1D6', 2.1);
+    this.sun = new THREE.DirectionalLight('#FFF8EC', 1.65);
     this.sun.position.set(-8, 16, -6);
     this.sun.castShadow = quality.shadows;
     this.sun.shadow.mapSize.set(quality.shadowSize, quality.shadowSize);
@@ -142,6 +143,7 @@ export class FarmWorld {
     sc.far = 60;
     this.sun.shadow.bias = -0.0015;
     this.sun.shadow.normalBias = 0.03;
+    this.sun.shadow.intensity = 0.45;
     this.scene.add(this.sun);
     this.scene.add(this.sun.target);
 
